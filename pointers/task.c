@@ -6,7 +6,7 @@ int main()
 	char *pointer = &x;
 	
 	printf("x = %d\n", x);
-	printf("Bits of source x: ");
+	printf("Bits of source num x: ");
 	for (int i = 0; i < 4; i++) {
 		printf("%d ", pointer[i]);
 	}
@@ -15,7 +15,7 @@ int main()
 	pointer[2] = 127;
 	
 	printf("Changed x = %d\n", x);
-	printf("Bits of changed x: ");
+	printf("Bits of changed num x: ");
 	for (int i = 0; i < 4; i++) {
                 printf("%d ", pointer[i]);
         }
