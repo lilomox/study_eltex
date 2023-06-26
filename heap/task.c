@@ -35,6 +35,12 @@ void free_book(Contact_book *book) {
   book = NULL;
 }
 
+void copy_sub(Sub *dest, Sub *src) {
+  strcpy(dest->name, src->name);
+  strcpy(dest->surename, src->surename);
+  strcpy(dest->number, src->number);
+}
+
 int stok(char *str, char symbol, char **words) {
   int count = 1;
   words[0] = str;
@@ -57,33 +63,17 @@ void sort(Contact_book *book) {
     if (strcmp(book->arr[i + 1].name, book->arr[i].name) < 0) {
       Sub tmp;
 
-      strcpy(tmp.name, book->arr[i + 1].name);
-      strcpy(tmp.surename, book->arr[i + 1].surename);
-      strcpy(tmp.number, book->arr[i + 1].number);
-
-      strcpy(book->arr[i + 1].name, book->arr[i].name);
-      strcpy(book->arr[i + 1].surename, book->arr[i].surename);
-      strcpy(book->arr[i + 1].number, book->arr[i].number);
-
-      strcpy(book->arr[i].name, tmp.name);
-      strcpy(book->arr[i].surename, tmp.surename);
-      strcpy(book->arr[i].number, tmp.number);
+      copy_sub(&tmp, &book->arr[i + 1]);
+      copy_sub(&book->arr[i + 1], &book->arr[i]);
+      copy_sub(&book->arr[i], &tmp);
 
       for (int j = i + 1; j < book->size; j++) {
         if (strcmp(book->arr[j].name, book->arr[j - 1].name) < 0) {
           Sub tmp2;
 
-          strcpy(tmp2.name, book->arr[j - 1].name);
-          strcpy(tmp2.surename, book->arr[j - 1].surename);
-          strcpy(tmp2.number, book->arr[j - 1].number);
-
-          strcpy(book->arr[j - 1].name, book->arr[j].name);
-          strcpy(book->arr[j - 1].surename, book->arr[j].surename);
-          strcpy(book->arr[j - 1].number, book->arr[j].number);
-
-          strcpy(book->arr[j].name, tmp2.name);
-          strcpy(book->arr[j].surename, tmp2.surename);
-          strcpy(book->arr[j].number, tmp2.number);
+          copy_sub(&tmp2, &book->arr[j - 1]);
+          copy_sub(&book->arr[j - 1], &book->arr[j]);
+          copy_sub(&book->arr[j], &tmp2);
         }
       }
     }
@@ -96,9 +86,7 @@ int add_sub(Contact_book *book, Sub *sb) {
     return -1;
   }
 
-  strcpy(book->arr[book->size].name, sb->name);
-  strcpy(book->arr[book->size].surename, sb->surename);
-  strcpy(book->arr[book->size].number, sb->number);
+  copy_sub(&book->arr[book->size], sb);
 
   book->size++;
   sort(book);
@@ -115,9 +103,7 @@ void del_sub(Contact_book *book, Sub *sb) {
       flag = 1;
 
       for (int j = i; j < book->size - 1; j++) {
-        strcpy(book->arr[j].name, book->arr[j + 1].name);
-        strcpy(book->arr[j].surename, book->arr[j + 1].surename);
-        strcpy(book->arr[j].number, book->arr[j + 1].number);
+        copy_sub(&book->arr[j], &book->arr[j + 1]);
       }
 
       book->size--;
