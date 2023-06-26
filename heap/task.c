@@ -38,6 +38,7 @@ void free_book(Contact_book *book) {
 int stok(char *str, char symbol, char **words) {
   int count = 1;
   words[0] = str;
+
   while (*str != '\0') {
     if (*str == symbol) {
       *str = '\0';
@@ -55,6 +56,7 @@ void sort(Contact_book *book) {
   for (int i = book->size - 2; i >= 0; i--) {
     if (strcmp(book->arr[i + 1].name, book->arr[i].name) < 0) {
       Sub tmp;
+
       strcpy(tmp.name, book->arr[i + 1].name);
       strcpy(tmp.surename, book->arr[i + 1].surename);
       strcpy(tmp.number, book->arr[i + 1].number);
@@ -70,6 +72,7 @@ void sort(Contact_book *book) {
       for (int j = i + 1; j < book->size; j++) {
         if (strcmp(book->arr[j].name, book->arr[j - 1].name) < 0) {
           Sub tmp2;
+
           strcpy(tmp2.name, book->arr[j - 1].name);
           strcpy(tmp2.surename, book->arr[j - 1].surename);
           strcpy(tmp2.number, book->arr[j - 1].number);
@@ -87,36 +90,36 @@ void sort(Contact_book *book) {
   }
 }
 
-int add_sub(Contact_book *book, Sub sb) {
+int add_sub(Contact_book *book, Sub *sb) {
   book->arr = realloc(book->arr, sizeof(Sub) * (book->size + 1));
   if (book->arr == NULL) {
     return -1;
   }
-  strcpy(book->arr[book->size].name, sb.name);
-  strcpy(book->arr[book->size].surename, sb.surename);
-  strcpy(book->arr[book->size].number, sb.number);
+
+  strcpy(book->arr[book->size].name, sb->name);
+  strcpy(book->arr[book->size].surename, sb->surename);
+  strcpy(book->arr[book->size].number, sb->number);
 
   book->size++;
   sort(book);
   return 0;
 }
 
-void del_sub(Contact_book *book) {
+void del_sub(Contact_book *book, Sub *sb) {
   int flag = 0;
-  char name[NAME_SIZE];
-  char surename[SURENAME_SIZE];
-  printf("Enter Name and Surename of sub: ");
-  scanf("%s %s", name, surename);
 
   for (int i = 0; i < book->size; i++) {
-    if ((strcmp(book->arr[i].name, name) == 0) &&
-        (strcmp(book->arr[i].surename, surename) == 0)) {
+    if ((strcmp(book->arr[i].name, sb->name) == 0) &&
+        (strcmp(book->arr[i].surename, sb->surename) == 0)) {
+
       flag = 1;
+
       for (int j = i; j < book->size - 1; j++) {
         strcpy(book->arr[j].name, book->arr[j + 1].name);
         strcpy(book->arr[j].surename, book->arr[j + 1].surename);
         strcpy(book->arr[j].number, book->arr[j + 1].number);
       }
+
       book->size--;
       book->arr = realloc(book->arr, sizeof(Sub) * (book->size + 1));
       break;
@@ -130,16 +133,12 @@ void del_sub(Contact_book *book) {
   }
 }
 
-void lookup(Contact_book *book) {
+void lookup(Contact_book *book, Sub *sb) {
   int flag = 0;
-  char name[NAME_SIZE];
-  char surename[SURENAME_SIZE];
-  printf("Enter Name and Surename of sub: ");
-  scanf("%s %s", name, surename);
 
   for (int i = 0; i < book->size; i++) {
-    if ((strcmp(book->arr[i].name, name) == 0) &&
-        (strcmp(book->arr[i].surename, surename) == 0)) {
+    if ((strcmp(book->arr[i].name, sb->name) == 0) &&
+        (strcmp(book->arr[i].surename, sb->surename) == 0)) {
       flag = 1;
       printf("\n");
       printf("Contact [%s %s] --> %s\n", book->arr[i].name,
@@ -174,10 +173,12 @@ int main() {
       char *words[3];
       if (stok(mass, ' ', words) == 3) {
         Sub tmp;
+
         strcpy(tmp.name, words[0]);
         strcpy(tmp.surename, words[1]);
         strcpy(tmp.number, words[2]);
-        add_sub(book, tmp);
+
+        add_sub(book, &tmp);
       }
     }
   }
@@ -186,7 +187,6 @@ int main() {
   fclose(file);
 
   char num[NAME_SIZE];
-
   while (1) {
     printf("commands: 1)add contact 2)delete contact 3)print all contacts "
            "4)find contact 5)exit\n");
@@ -196,23 +196,38 @@ int main() {
     system("clear");
     if (strcmp(num, "1") == 0) {
       Sub sb;
+
       printf("enter name: ");
       scanf("%s", sb.name);
+
       printf("enter surename: ");
       scanf("%s", sb.surename);
+
       printf("enter number: ");
       scanf("%s", sb.number);
       strcat(sb.number, "\n");
+
       printf("\n");
-      add_sub(book, sb);
+      add_sub(book, &sb);
+
     } else if (strcmp(num, "2") == 0) {
-      del_sub(book);
+      Sub sb;
+      printf("Enter Name and Surename of sub: ");
+      scanf("%s %s", sb.name, sb.surename);
+      del_sub(book, &sb);
+
     } else if (strcmp(num, "3") == 0) {
       print_subs(book);
+
     } else if (strcmp(num, "4") == 0) {
-      lookup(book);
+      Sub sb;
+      printf("Enter Name and Surename of sub: ");
+      scanf("%s %s", sb.name, sb.surename);
+      lookup(book, &sb);
+
     } else if (strcmp(num, "5") == 0) {
       break;
+
     } else {
       printf("unknown Command\n");
     }
@@ -222,13 +237,17 @@ int main() {
 
   for (int i = 0; i < book->size; i++) {
     char arr[CONTACT_SIZE];
+
     strcpy(arr, book->arr[i].name);
     strcat(arr, " ");
+
     strcat(arr, book->arr[i].surename);
     strcat(arr, " ");
+
     strcat(arr, book->arr[i].number);
     fprintf(lf, "%s", arr);
   }
+
   fclose(lf);
   free_book(book);
 }
