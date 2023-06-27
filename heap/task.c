@@ -88,9 +88,9 @@ int add_sub(Contact_book *book, Sub *sb) {
     }
 
     copy_sub(&book->arr[book->size], sb);
-
     book->size++;
     sort(book);
+
   } else if (book->size == 0) {
     book->arr = malloc(sizeof(Sub));
     if (book->arr == NULL) {
@@ -98,9 +98,7 @@ int add_sub(Contact_book *book, Sub *sb) {
     }
 
     copy_sub(&book->arr[book->size], sb);
-
     book->size++;
-    sort(book);
   }
   return 0;
 }
