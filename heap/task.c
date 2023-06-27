@@ -103,7 +103,7 @@ int add_sub(Contact_book *book, Sub *sb) {
   return 0;
 }
 
-void del_sub(Contact_book *book, Sub *sb) {
+int del_sub(Contact_book *book, Sub *sb) {
   int flag = 0;
 
   for (int i = 0; i < book->size; i++) {
@@ -118,6 +118,9 @@ void del_sub(Contact_book *book, Sub *sb) {
 
       book->size--;
       book->arr = realloc(book->arr, sizeof(Sub) * (book->size + 1));
+      if (book->arr == NULL) {
+        return -1;
+      }
       break;
     }
   }
@@ -127,6 +130,7 @@ void del_sub(Contact_book *book, Sub *sb) {
     printf("Contact Not found\n");
     printf("\n");
   }
+  return 0;
 }
 
 void lookup(Contact_book *book, Sub *sb) {
@@ -175,7 +179,10 @@ int main() {
         strcpy(tmp.surename, words[1]);
         strcpy(tmp.number, words[2]);
 
-        add_sub(book, &tmp);
+        if (add_sub(book, &tmp) == -1) {
+          printf("Can't allocate memory\n");
+          return -1;
+        }
       }
     }
   }
@@ -205,13 +212,19 @@ int main() {
       strcat(sb.number, "\n");
 
       printf("\n");
-      add_sub(book, &sb);
+      if (add_sub(book, &sb) == -1) {
+        printf("Can't allocate memory\n");
+        return -1;
+      }
 
     } else if (strcmp(num, "2") == 0) {
       Sub sb;
       printf("Enter Name and Surename of sub: ");
       scanf("%s %s", sb.name, sb.surename);
-      del_sub(book, &sb);
+      if (del_sub(book, &sb) == -1) {
+        printf("Can't Reallocate memory\n");
+        return -1;
+      }
 
     } else if (strcmp(num, "3") == 0) {
       print_subs(book);
