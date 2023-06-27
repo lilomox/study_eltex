@@ -19,7 +19,7 @@ typedef struct {
 } Contact_book;
 
 Contact_book *new_contact_book() {
-  Contact_book *book = (Contact_book *)malloc(sizeof(Contact_book));
+  Contact_book *book = malloc(sizeof(Contact_book));
   if (book == NULL) {
     return NULL;
   }
@@ -81,15 +81,27 @@ void sort(Contact_book *book) {
 }
 
 int add_sub(Contact_book *book, Sub *sb) {
-  book->arr = realloc(book->arr, sizeof(Sub) * (book->size + 1));
-  if (book->arr == NULL) {
-    return -1;
+  if (book->size > 0) {
+    book->arr = realloc(book->arr, sizeof(Sub) * (book->size + 1));
+    if (book->arr == NULL) {
+      return -1;
+    }
+
+    copy_sub(&book->arr[book->size], sb);
+
+    book->size++;
+    sort(book);
+  } else if (book->size == 0) {
+    book->arr = malloc(sizeof(Sub));
+    if (book->arr == NULL) {
+      return -1;
+    }
+
+    copy_sub(&book->arr[book->size], sb);
+
+    book->size++;
+    sort(book);
   }
-
-  copy_sub(&book->arr[book->size], sb);
-
-  book->size++;
-  sort(book);
   return 0;
 }
 
@@ -149,7 +161,8 @@ void print_subs(Contact_book *book) {
 }
 
 int main() {
-  Contact_book *book = new_contact_book();
+  Contact_book *book = NULL;
+  book = new_contact_book(book);
 
   FILE *file = fopen("book.txt", "r+");
   char mass[CONTACT_SIZE];
