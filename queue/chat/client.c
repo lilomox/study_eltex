@@ -62,7 +62,7 @@ void *writs() {
     strcat(name, " ");
 
     msgsnd(msgid_msg, &msg, sizeof(msg), 0);
-
+    
     strcpy(msg.mtext, "\n");
     msg.mtype = 1;
     msgsnd(msgid_msg, &msg, sizeof(msg), 0);

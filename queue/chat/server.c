@@ -42,7 +42,7 @@ int main() {
 
     while (1) {
         msgrcv(msgid_msg, &msg, sizeof(msg), 1, 0);
-        
+        printf("%s", msg.mtext);
         strcpy(grp.marray[grp.count], msg.mtext);
         grp.count++;
         grp.mtype = NUM_MSG;
