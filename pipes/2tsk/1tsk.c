@@ -1,32 +1,46 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #define SIZE 255
 
 int main() {
-  pid_t pid;
-  int writefd;
-  pid = fork();
+  int fd1, fd2;
+  pid_t child;
 
-  if (pid == 0) { 
+  mkfifo("channel1", 0666);
+  mkfifo("channel2", 0666);
+
+  child = fork();
+  if (child < 0) {
+    perror("fork failed");
+    return 0;
+  } else if (child == 0) {
     execl("2tsk", "2tsk", NULL);
-  } else { 
-    writefd = open("buf", O_WRONLY, 0);
+  } else {
+    char msg[SIZE];
 
-    char arr[SIZE];
-    printf("Enter your name: ");
-    scanf("%s", arr);
+    fd1 = open("channel1", O_RDONLY);
+    fd2 = open("channel2", O_RDONLY);
 
-    write(writefd, arr, strlen(arr));
+    strcpy(msg, "SRC");
+    printf("%s\n", msg);
+    write(fd2, msg, sizeof(msg));
 
-    close(writefd);
     wait(NULL);
-    exit(EXIT_SUCCESS);
+
+    read(fd1, msg, sizeof(msg));
+    printf("%s\n", msg);
+
+    close(fd1);
+    close(fd2);
   }
+
+  unlink("channel1");
+  unlink("channel2");
 }

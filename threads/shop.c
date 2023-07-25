@@ -30,7 +30,6 @@ void *shopper(void *arg) {
         } else {
           pthread_mutex_unlock(&shop_mutexes[i]);
         }
-
       }
     }
   }
@@ -46,8 +45,8 @@ void *delivery() {
       if (pthread_mutex_trylock(&shop_mutexes[i]) == 0) {
         shops[i] += (rand() % 1000);
 
-        printf("Delivery made to Shop№%d. Shop№%d = %d\n", i + 1,
-             i + 1, shops[i]);
+        printf("Delivery made to Shop№%d. Shop№%d = %d\n", i + 1, i + 1,
+               shops[i]);
         sleep(1);
         pthread_mutex_unlock(&shop_mutexes[i]);
         break;
@@ -58,27 +57,23 @@ void *delivery() {
 }
 
 int main() {
-  pthread_t shoppers[COUNT_OF_SHOPS-1];
+  pthread_t shoppers[COUNT_OF_SHOPS - 1];
   pthread_t delivery_thread;
-  int shopper_ids[COUNT_OF_SHOPS-1] = {0, 1, 2};
-
+  int shopper_ids[COUNT_OF_SHOPS - 1] = {0, 1, 2};
 
   for (int i = 0; i < COUNT_OF_SHOPS; i++) {
     pthread_mutex_init(&shop_mutexes[i], NULL);
   }
-
 
   for (int i = 0; i < COUNT_OF_SHOPS - 1; i++) {
     pthread_create(&shoppers[i], NULL, shopper, &shopper_ids[i]);
   }
   pthread_create(&delivery_thread, NULL, delivery, NULL);
 
-
   for (int i = 0; i < COUNT_OF_SHOPS - 1; i++) {
     pthread_join(shoppers[i], NULL);
   }
   pthread_join(delivery_thread, NULL);
-
 
   for (int i = 0; i < COUNT_OF_SHOPS; i++) {
     pthread_mutex_destroy(&shop_mutexes[i]);

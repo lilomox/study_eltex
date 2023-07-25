@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
 
@@ -43,8 +44,8 @@ int main() {
     signal(SIGWINCH, sig_winch);
     idlok(stdscr, TRUE);
     keypad(stdscr, TRUE);
-    WINDOW *wnd1, *wnd2;
-    WINDOW *subwnd1, *subwnd2;
+    WINDOW *wnd1 = NULL, *wnd2 = NULL;
+    WINDOW *subwnd1 = NULL, *subwnd2 = NULL;
 
     start_color();
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
@@ -66,7 +67,7 @@ int main() {
     subwnd2 = derwin(wnd2, 30, (COLS / 2) - 2, 1, 1);
     wrefresh(wnd2);
 
-    struct dirent **namelist1, **namelist2;
+    struct dirent **namelist1 = NULL, **namelist2 = NULL;
 
     int n1, n2;
     int tl = strlen(list[0].path);
@@ -90,6 +91,7 @@ int main() {
         wattroff(subwnd1, COLOR_PAIR(1));
 
         wrefresh(subwnd1);
+        free(drst);
       } else {
         wattron(subwnd1, COLOR_PAIR(2));
 
@@ -129,6 +131,7 @@ int main() {
         wattroff(subwnd2, COLOR_PAIR(1));
 
         wrefresh(subwnd2);
+        free(drst1);
       } else {
         wattron(subwnd2, COLOR_PAIR(2));
 
@@ -195,6 +198,7 @@ int main() {
                 wattron(nm1, A_BOLD);
                 wattroff(nm1, COLOR_PAIR(1));
                 wrefresh(nm1);
+                free(drup);
               } else {
                 wattron(nm1, COLOR_PAIR(2));
                 wattron(nm1, A_BOLD);
@@ -244,6 +248,7 @@ int main() {
                   wattron(nm, A_BOLD);
                   wattroff(nm, COLOR_PAIR(1));
                   wrefresh(nm);
+                  free(drdw);
                 } else {
                   wattron(nm, COLOR_PAIR(2));
                   wattron(nm, A_BOLD);
@@ -268,11 +273,13 @@ int main() {
         strcat(list[side].path, list[side].str[list[side].local]);
 
         int count = scandir(list[side].path, &namelist3, 0, alphasort);
-        if (opendir(list[side].path) == NULL) {
+        DIR *cdrc = opendir(list[side].path);
+        if (cdrc == NULL) {
           flag = 1;
           glob = slen;
           glob_side = side;
           glob_cols = cols;
+          free(cdrc);
           break;
         } else {
           if (count > 0) {
@@ -316,13 +323,14 @@ int main() {
             list[side].local = 1;
             strcat(list[side].path, "/");
           }
+          closedir(cdrc);
         }
       }
     }
-    delwin(wnd1);
-    delwin(subwnd1);
     delwin(wnd2);
     delwin(subwnd2);
+    delwin(wnd1);
+    delwin(subwnd1);
     endwin();
 
     if (flag == 1) {
@@ -335,7 +343,7 @@ int main() {
       } else {
         wait(&status);
         printf("\n");
-        printf("\033[92mTap 'ENTER' to continue...\033[39m\n"); 
+        printf("\033[92mTap 'ENTER' to continue...\033[39m\n");
         getch();
         system("clear");
         list[side].path[glob] = '\0';

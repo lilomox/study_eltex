@@ -1,28 +1,28 @@
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <fcntl.h>
 
 #define SIZE 255
 
 int main() {
-	char arr[SIZE];
-	int count = 0;
-	int readfd;
+  char word[SIZE];
+  int fd1, fd2;
 
-	readfd = open("buf", O_RDONLY, 0);
+  fd1 = open("channel1", O_WRONLY);
+  fd2 = open("channel2", O_RDONLY);
 
-	char c;
-	while (read(readfd, &c, 1) > 0) {
-		arr[count] = c;
-		count++;
-	}
+  read(fd2, word, sizeof(word));
+  printf("%s\n", word);
 
-	printf("hey, %s\n", arr);
+  strcpy(word, "sendd");
+  write(fd1, word, sizeof(word));
 
-	close(readfd);
+  close(fd1);
+  close(fd2);
+  return 0;
 }

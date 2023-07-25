@@ -164,6 +164,12 @@ int main() {
 
             fclose(new_file);
             goto to;
+          case '\n':
+            row++;
+            cols = 0;
+            move(row, cols);
+            insch(t);
+            break;
           default:
             move(row, cols++);
             insch(t);

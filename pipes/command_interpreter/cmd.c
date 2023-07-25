@@ -41,7 +41,7 @@ int find_last_slesh(char *str) {
 int main() {
   pid_t pid;
 
-  char path[SIZE];
+  char *path = malloc(SIZE);
   getcwd(path, SIZE);
   int poz_of_slesh = find_last_slesh(path);
   strcat(path, "/");
@@ -137,4 +137,5 @@ int main() {
     free(arr);
     free(comand);
   }
+  free(path);
 }

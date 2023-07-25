@@ -12,22 +12,22 @@ int main() {
   pipe(pipefd);
   pid = fork();
 
-  if (pid == 0) { 
+  if (pid == 0) {
     close(pipefd[0]);
     printf("Hello\n");
     write(pipefd[1], "Hello", strlen("Hello"));
     close(pipefd[1]);
     exit(EXIT_SUCCESS);
 
-  } else { 
-    close(pipefd[1]); 
+  } else {
+    close(pipefd[1]);
     wait(NULL);
     char c;
     while (read(pipefd[0], &c, 1) > 0) {
       write(STDOUT_FILENO, &c, 1);
     }
     write(STDOUT_FILENO, ", bye\n", 6);
-    close(pipefd[0]); 
+    close(pipefd[0]);
     exit(EXIT_SUCCESS);
   }
 }

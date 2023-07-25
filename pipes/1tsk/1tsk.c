@@ -12,7 +12,7 @@ int main() {
   pipe(pipefd);
   pid = fork();
 
-  if (pid == 0) { 
+  if (pid == 0) {
     close(pipefd[1]);
     char c;
     while (read(pipefd[0], &c, 1) > 0) {
@@ -22,11 +22,11 @@ int main() {
 
     close(pipefd[0]);
 
-  } else { 
-    close(pipefd[0]); 
+  } else {
+    close(pipefd[0]);
     printf("Hello\n");
     write(pipefd[1], "Hello", strlen("Hello"));
-    close(pipefd[1]); 
+    close(pipefd[1]);
     wait(NULL);
     printf("8\n");
     exit(EXIT_SUCCESS);
