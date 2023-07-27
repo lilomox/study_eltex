@@ -1,10 +1,10 @@
+#include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#include <stdlib.h>
-#include <signal.h>
 #include <unistd.h>
 
 #define PATH "/tmp/sockets"
@@ -25,8 +25,8 @@ int main() {
 
   char buf[SIZE];
   if (recv(server_fd, buf, sizeof(buf), 0) == -1) {
-  	perror("recv");
-  	return 1;
+    perror("recv");
+    return 1;
   }
   printf("%s", buf);
 
@@ -36,8 +36,8 @@ int main() {
   fgets(buf, SIZE, stdin);
 
   if (send(server_fd, buf, strlen(buf), 0) == -1) {
-  	perror("send");
-  	return 1;
+    perror("send");
+    return 1;
   }
   printf("message sent.\n");
 }
