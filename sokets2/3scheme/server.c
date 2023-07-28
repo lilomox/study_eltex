@@ -12,7 +12,7 @@
 
 #define PATH "/tmp/sockets"
 #define SIZE 199
-#define COUNT_OF_THREADS 5
+#define COUNT_OF_THREADS 15
 
 int glob_fd = 0;
 
@@ -55,32 +55,33 @@ void *process(void *arg) {
   msqid = msgget(key, IPC_CREAT | 0666);
   if (msqid == -1) {
     perror("msgget");
-    exit(1);
+	exit(1);
   }
-  if (pthread_mutex_trylock(&mutexes[i]) == 0) {
-    if (msgrcv(msqid, &buff, sizeof(buff.mtext), 0, 0) == -1) {
-      perror("msgrcv");
-      exit(1);
-    }
+  while (1) {
+	  if (pthread_mutex_trylock(&mutexes[i]) == 0) {
+	    if (msgrcv(msqid, &buff, sizeof(buff.mtext), 0, 0) == -1) {
+	      perror("msgrcv");
+	      exit(1);
+	    }
 
-    int temp_fd = buff.mtext;
-    if (send(temp_fd, "connection successful\n",
-             strlen("connection successful\n"), 0) == -1) {
-      perror("send");
-      exit(1);
-    }
+	    int temp_fd = buff.mtext;
+	    if (send(temp_fd, "connection successful\n",
+	             strlen("connection successful\n"), 0) == -1) {
+	      perror("send");
+	      exit(1);
+	    }
 
-    char buf[SIZE];
-    if (recv(temp_fd, buf, sizeof(buf), 0) == -1) {
-      perror("recv");
-      exit(1);
-    }
+	    char buf[SIZE];
+	    if (recv(temp_fd, buf, sizeof(buf), 0) == -1) {
+	      perror("recv");
+	      exit(1);
+	    }
 
-    printf("receive massage: %s", buf);
+	    printf("receive massage: %s", buf);
 
-    pthread_mutex_unlock(&mutexes[i]);
+	    pthread_mutex_unlock(&mutexes[i]);
+	  }
   }
-
   return NULL;
 }
 
