@@ -1,11 +1,12 @@
-#include <signal.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <stdlib.h>
+#include <signal.h>
 #include <unistd.h>
+#include <time.h>
 
 #define PATH "/tmp/sockets"
 #define SIZE 199
@@ -25,19 +26,19 @@ int main() {
 
   char buf[SIZE];
   if (recv(server_fd, buf, sizeof(buf), 0) == -1) {
-    perror("recv");
-    return 1;
+  	perror("recv");
+  	return 1;
   }
   printf("%s", buf);
 
   memset(buf, '\0', SIZE);
 
-  printf("Enter message: ");
-  fgets(buf, SIZE, stdin);
+  time_t ttime = time(NULL);
+  strcpy(buf, ctime(&ttime));
 
   if (send(server_fd, buf, strlen(buf), 0) == -1) {
-    perror("send");
-    return 1;
+  	perror("send");
+  	return 1;
   }
   printf("message sent.\n");
 }

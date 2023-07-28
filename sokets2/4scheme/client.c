@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <time.h>
 
 #define PATH "127.0.0.14"
 #define SIZE 199
@@ -36,8 +37,8 @@ int main() {
 
   memset(buf, '\0', SIZE);
 
-  printf("Enter message: ");
-  fgets(buf, SIZE, stdin);
+  time_t ttime = time(NULL);
+  strcpy(buf, ctime(&ttime));
 
   if (send(server_fd, buf, strlen(buf), 0) == -1) {
     perror("send");

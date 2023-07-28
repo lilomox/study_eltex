@@ -293,7 +293,7 @@ int main() {
         perror("msgsnd2");
         return 1;
       }
-      sleep(5);
+      sleep(1);
     }
   }
 

@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 #define PATH "127.0.0.9"
 #define PORT_TO_UDP 5555
@@ -36,8 +37,8 @@ int main() {
 
   memset(buf, '\0', SIZE);
 
-  printf("Enter message: ");
-  fgets(buf, SIZE, stdin);
+  time_t ttime = time(NULL);
+  strcpy(buf, ctime(&ttime));
 
   if (sendto(fd, buf, strlen(buf), 0, (struct sockaddr *)&server, len_cln) ==
       -1) {

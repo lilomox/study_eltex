@@ -10,6 +10,7 @@
 
 #define PATH "/tmp/sockets"
 #define SIZE 199
+#define COUNT_OF_THREADS 15
 
 int glob_fd = 0;
 
@@ -83,7 +84,7 @@ int main() {
     return 1;
   }
 
-  pthread_t treads[100];
+  pthread_t treads[COUNT_OF_THREADS];
   int count_of_thr = 0;
   while (1) {
     client_fd = accept(server_fd, (struct sockaddr *)&server, &addrlen);
@@ -95,9 +96,12 @@ int main() {
     pthread_create(&treads[count_of_thr], NULL, process, &client_fd);
 
     count_of_thr++;
+    if (count_of_thr > COUNT_OF_THREADS-1) {
+      break;
+    }
   }
 
-  for (int i = 0; i < count_of_thr; i++) {
+  for (int i = 0; i < COUNT_OF_THREADS; i++) {
     pthread_join(treads[i], NULL);
   }
 }
