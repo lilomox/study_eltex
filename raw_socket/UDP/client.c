@@ -1,12 +1,12 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <netinet/udp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <netinet/udp.h>
 
 #define PATH "127.0.0.2"
 #define PORT 7777
@@ -24,7 +24,7 @@ int main() {
   struct sockaddr_in server;
 
   socklen_t len = sizeof(server);
-  
+
   struct udphdr *udp_header;
   struct msg *message;
 
@@ -35,7 +35,7 @@ int main() {
 
   server.sin_family = AF_INET;
   server.sin_port = htons(8888);
-  inet_pton(AF_INET, PATH, &(server.sin_addr));  
+  inet_pton(AF_INET, PATH, &(server.sin_addr));
 
   udp_header->source = htons(PORT);
   udp_header->dest = htons(8888);
@@ -44,7 +44,8 @@ int main() {
 
   strcpy(message->buf, "s");
 
-  if (sendto(fd, buf, sizeof(struct udphdr) + 1, 0, (struct sockaddr *)&server, len) < 0) {
+  if (sendto(fd, buf, sizeof(struct udphdr) + 1, 0, (struct sockaddr *)&server,
+             len) < 0) {
     perror("sendto");
     return 1;
   }
@@ -55,7 +56,7 @@ int main() {
   while (1) {
     recvfrom(fd, buf, MAX_SIZE, 0, (struct sockaddr *)&server, &len);
     udp_header = (struct udphdr *)(buf + IP_HEAD_SIZE);
-    message = (struct msg *)(buf + sizeof(struct udphdr) + (sizeof(int)*5));
+    message = (struct msg *)(buf + sizeof(struct udphdr) + (sizeof(int) * 5));
     if (ntohs(udp_header->dest) == 7777) {
       break;
     }
@@ -80,7 +81,8 @@ int main() {
   udp_header->len = htons(sizeof(struct udphdr) + strlen(message->buf));
   udp_header->check = 0;
 
-  if (sendto(fd, sec_buf, sizeof(struct udphdr) + strlen(message->buf), 0, (struct sockaddr *)&server, len) < 0) {
+  if (sendto(fd, sec_buf, sizeof(struct udphdr) + strlen(message->buf), 0,
+             (struct sockaddr *)&server, len) < 0) {
     perror("sendto");
     return 1;
   }
