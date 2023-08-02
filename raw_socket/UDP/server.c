@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,17 +8,42 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define ADDR "127.0.0.1"
-#define PORT 7777
+#define ADDR "127.0.0.2"
+#define PORT 8888
 #define SIZE 199
 
+int glob_fd = 0;
+
+void handle_sigint(int sig) {
+  close(glob_fd);
+  printf("\n");
+  exit(EXIT_SUCCESS);
+}
+
+void handle_sigtstp(int sig) {
+  close(glob_fd);
+  printf("\n");
+  exit(EXIT_SUCCESS);
+}
+
 int main() {
+  if (signal(SIGINT, handle_sigint) == SIG_ERR) {
+    perror("signal SIGINT");
+    return 1;
+  }
+
+  if (signal(SIGTSTP, handle_sigtstp) == SIG_ERR) {
+    perror("signal SIGTSTP");
+    return 1;
+  }
+
   char buf[SIZE];
 
   struct sockaddr_in server, client;
   int fd;
 
   fd = socket(AF_INET, SOCK_DGRAM, 0);
+  glob_fd = fd;
 
   server.sin_family = AF_INET;
   server.sin_port = htons(PORT);
