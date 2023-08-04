@@ -18,8 +18,8 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define PATH "127.0.0.2"
-#define DEST_PATH "127.0.0.20"
+#define PATH "192.168.88.242"
+#define DEST_PATH "192.168.8.0"
 #define PORT 7777
 #define DEST_PORT 8888
 #define MAX_SIZE 10000
