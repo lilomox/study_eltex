@@ -33,26 +33,24 @@ struct msg {
   char buf[SIZE];
 };
 
-unsigned short check_sum(unsigned short *ptr, int nbytes) {
-  register long sum = 0;
-  unsigned short oddbyte;
-  register short answer;
+uint16_t check_sum(uint16_t *ptr, int count) {
+  long sum = 0;
+  uint16_t byte;
 
-  while (nbytes > 1) {
+  while (count > 1) {
     sum += *ptr++;
-    nbytes -= 2;
+    count -= 2;
   }
-  if (nbytes == 1) {
-    oddbyte = 0;
-    *((u_char *)&oddbyte) = *(u_char *)ptr;
-    sum += oddbyte;
+  if (count == 1) {
+    byte = 0;
+    *((u_char *)&byte) = *(u_char *)ptr;
+    sum += byte;
   }
 
   sum = (sum >> 16) + (sum & 0xffff);
   sum = sum + (sum >> 16);
-  answer = (short)~sum;
 
-  return (answer);
+  return (uint16_t)~sum;
 }
 
 int main() {
@@ -108,7 +106,7 @@ int main() {
   ip_header->saddr = inet_addr(PATH);
   ip_header->daddr = inet_addr(DEST_PATH);
   ip_header->check =
-      check_sum((unsigned short *)ip_header, sizeof(struct iphdr));
+      check_sum((uint16_t *)ip_header, sizeof(struct iphdr));
 
   udp_header->source = htons(PORT);
   udp_header->dest = htons(DEST_PORT);
@@ -185,7 +183,7 @@ int main() {
   ip_header->saddr = inet_addr(PATH);
   ip_header->daddr = inet_addr(DEST_PATH);
   ip_header->check =
-      check_sum((unsigned short *)ip_header, sizeof(struct iphdr));
+      check_sum((uint16_t *)ip_header, sizeof(struct iphdr));
 
   udp_header->source = htons(PORT);
   udp_header->dest = htons(DEST_PORT);
