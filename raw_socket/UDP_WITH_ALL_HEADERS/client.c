@@ -18,16 +18,16 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define PATH "192.168.88.242"
-#define DEST_PATH "192.168.8.0"
+#define DEST_PATH "192.168.122.1"
+#define PATH "192.168.122.29"
 #define PORT 7777
-#define DEST_PORT 8888
+#define DEST_PORT 8889
 #define MAX_SIZE 10000
 #define SIZE 199
 
-unsigned char src_mac[6] = {0x38, 0x87, 0xd5, 0xc8, 0x12, 0x16};
-unsigned char dest_mac[6] = {0x11, 0x11, 0x11,
-                             0x11, 0x11, 0x11}; // input dest mac
+unsigned char dest_mac[6] = {0x52, 0x54, 0x00, 0x98, 0xbe, 0x64};
+unsigned char src_mac[6] = {0x52, 0x54, 0x00,
+                             0x1f, 0x80, 0x50};
 
 struct msg {
   char buf[SIZE];
@@ -61,7 +61,7 @@ int main() {
 
   memset(&server, 0, sizeof(struct sockaddr_ll));
   server.sll_family = AF_PACKET;
-  server.sll_ifindex = if_nametoindex("wlo1");
+  server.sll_ifindex = if_nametoindex("enp1s0");
   server.sll_halen = 6;
   for (int i = 0; i < 6; i++) {
     server.sll_addr[i] = src_mac[i];
@@ -158,7 +158,7 @@ int main() {
 
   memset(&server, 0, sizeof(struct sockaddr_ll));
   server.sll_family = AF_PACKET;
-  server.sll_ifindex = if_nametoindex("wlo1");
+  server.sll_ifindex = if_nametoindex("enp1s0");
   server.sll_halen = 6;
   for (int i = 0; i < 6; i++) {
     server.sll_addr[i] = src_mac[i];

@@ -8,8 +8,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define ADDR "127.0.0.2"
-#define PORT 8888
+#define ADDR "192.168.122.1"
+#define PORT 8889
 #define SIZE 199
 
 int main() {
